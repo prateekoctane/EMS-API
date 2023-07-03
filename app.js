@@ -1,13 +1,27 @@
-const express = require("express")
-const app = express()
-const dotenv = require("dotenv")
-const { connection } = require("./db/db");
+const express = require("express");
+const app = express();
+const cors =require("cors");
+const dotenv = require("dotenv");
 const { adminRouter } = require("./routes/adminusers");
+const employee = require("./routes/employee");
+const { connection } = require("./db/db");
+
+
+app.use(express.json());
+app.use(cors({origin:"*"}));
+app.use("/adminusers",adminRouter)
+app.use("/employees",employee)
+
 const  PORT = process.env.PORT || 8080;
 dotenv.config();
 
-app.use("/adminusers",adminRouter)
-
+app.get("/", async(req,res)=>{
+    try{
+        res.send("Home")
+    }catch(error){
+        res.send({ "msg":"Something went Wrong","error":error.message })
+    }
+})
 
 // error handler
 app.use(function (err, req, res, next) {
