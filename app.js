@@ -6,6 +6,7 @@ const { adminRouter } = require("./routes/adminusers");
 const employee = require("./routes/employee");
 const {shiftRouter} = require("./routes/shifts");
 const { connection } = require("./db/db");
+const holiday = require("./routes/holidays")
 
 
 app.use(express.json());
@@ -13,6 +14,7 @@ app.use(cors({origin:"*"}));
 app.use("/adminusers",adminRouter)
 app.use("/employees",employee)
 app.use("/shift",shiftRouter)
+app.use("/holidays",holiday)
 
 const  PORT = process.env.PORT || 8080;
 dotenv.config();
