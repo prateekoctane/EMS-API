@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <mate charest="utf-8" />
+    <title>Payment</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
+  </head>
+  <body>
+   <h1>Please wait... Do not refresh the page... </h1>
+   <form method="POST" name="razorpay" action="https://api.razorpay.com/v1/checkout/embedded">
+
+   
+   <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+   <script>
+    var options = {
+                    "key": "<%= razorpay_key_id %>",
+                    "amount": "<%= amount %>", 
+                    "currency": "USD",
+                    "name": "Texscript",
+                    "description": "texscript.com",
+                    "image": "https://cdn.razorpay.com/logos/G5MiDsyYrhOalS_medium.png",
+                    "order_id": "<%= order_id %>", 
+                    "callback_url": "https://api-texscript.getdemos.in/payments/callback",
+                    "redirect": true,
+                    "prefill": {
+                        "name": "<%= name %>",
+                        "email": "<%= email %>",
+                        "contact": "<%= mobile %>"
+                    },
+                    "notes": {
+                        "student_id": "<%= student_id %>",
+                        "name": "<%= name %>",
+                        "paper_id": "<%= paper_id %>",
+                    },
+                    "theme": {
+                    "color": "#F37254"
+                    },
+                    "modal": {
+                        "ondismiss": function(){
+                            res.redirect("https://api-texscript.getdemos.in/payments/cancel");
+                            //alert("You have cancelled the payment.");
+                        }
+                    }
+                };
+                var rzp1 = new Razorpay(options);            
+                rzp1.open();    
+   </script>
+   </form>
+  </body>
+</html>

@@ -1,5 +1,5 @@
 const express = require("express");
-const employeeModel = require("../models/employee");
+const Employees = require("../models/Employees");
 const auth = require("../middleware/auth");
 const employee = express.Router();
 const multer = require("multer");
@@ -40,17 +40,21 @@ const storage = multer.diskStorage({
 
 //insert
 employee.post("/insert",upload.single("image_url"), async(req,res)=>{
-  const { firstname, lastname, code,password } = req.body;
+  const { name, code, email , designation, salary, aadhar, pan, date_of_birth, date_of_joining, mobile, } = req.body;
   const image_url=req.file; 
-  try{  
-        
-    const hashedPassword = await bcrypt.hash(password,5)
-    const obj = new employeeModel({
-            firstname,
-            lastname,
+  try{   
+        const obj = new Employees({
+            name,
             code,
-            password: hashedPassword,
-           // image_url: image_url.path, 
+            email,
+            designation,
+            salary, 
+            aadhar, 
+            pan,
+            date_of_birth, 
+            date_of_joining, 
+            mobile,
+            image_url: image_url, 
         });
          const employee = await obj.save();
          if (!employee) {
@@ -67,8 +71,12 @@ employee.post("/insert",upload.single("image_url"), async(req,res)=>{
           });
     }catch(error){
         if (error.message.includes("duplicate key")) {
-            if (error.message.includes("firstname")) {
-              res.send({ status: 0,message: "Name already exists.", data: "",  });
+            if (error.message.includes("name")) {
+              res.send({ 
+                status: 0,
+                message: "Name already exists.", 
+                data: "",  
+              });
             } else if(error.message.includes("code")){
                 res.send({
                     status: 0,
@@ -85,7 +93,7 @@ employee.post("/insert",upload.single("image_url"), async(req,res)=>{
 //getall
 employee.post("/getall", auth, async (req, res) => {
     try {
-      const employee = await employeeModel.find();
+      const employee = await Employees.find();
       if (!employee) {
         res.send({
           status: 0,
@@ -112,7 +120,7 @@ employee.post("/updatePassword", auth, async(req,res)=>{
     if (!mongoose.Types.ObjectId.isValid(id)) {
       return res.status(400).json({ message: 'Invalid employee ID.' });
     }
-    const employee = await employeeModel.findById(id)
+    const employee = await Employee.findById(id)
     if(!employee){
       return res.status({ status: 0, message: "Employee not found"})
     }
@@ -129,37 +137,5 @@ employee.post("/updatePassword", auth, async(req,res)=>{
   }
 })
 
-// Email Seervice
-employee.post('/send-email', async (req, res) => {
-  const { email } = req.body;
-  // Create a Nodemailer transporter
-  const transporter = nodemailer.createTransport({
-    // Configure the email service provider here
-    // For example, if using Gmail:
-    service: 'Gmail',
-    auth: {
-      user: 'talhamohd2376@gmail.com', // Replace with your email address
-      pass: '22092000Ta@g', // Replace with your email password or app password for Gmail
-    },
-  });
-
-  // Construct the email message
-  const mailOptions = {
-    from: 'talhamohd2376@l@gmail.com', // Replace with your email address
-    to: email,
-    subject: 'Form Submission Confirmation',
-    text: `Hello Talha,\n\nThank you for your form submission. We have received your message: ${message}\n\nRegards,\nYour Company`,
-  };
-
-  // Send the email
-  await transporter.sendMail(mailOptions);
-  console.log('Email sent successfully');
- try{
-  res.json({ status: 1, message: 'Email sent successfully' });
-} catch (error) {
-  console.error('Error sending email:', error);
-  res.status(500).json({ status: 0, message: 'Failed to send email' });
-}
-});
 
 module.exports = employee
